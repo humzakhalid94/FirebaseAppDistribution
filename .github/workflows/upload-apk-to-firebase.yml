@@ -39,6 +39,8 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+  
           
       # Step 5 Install the bundler & Fastlane (Create environment for ruby to avoid dependency hell and manage the dependencies versions)
       - name: Install bundler
