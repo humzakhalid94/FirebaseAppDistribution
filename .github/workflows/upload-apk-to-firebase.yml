@@ -36,16 +36,18 @@ jobs:
 
       # Step 4 Setup Ruby
       - name: Setup Ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.6'
-
+          ruby-version: '3.0'
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - run: bundle exec rake
+          
       # Step 5 Install the bundler & Fastlane (Create environment for ruby to avoid dependency hell and manage the dependencies versions)
-      - name: Install bundler
-        run: |
-          gem install bundler:2.2.27
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+     #  - name: Install bundler
+       #  run: |
+       #  gem install bundler:2.2.27
+       #   bundle config path vendor/bundle
+        #   bundle install --jobs 4 --retry 3
 
       # Step 6 Install the Firebase app distribution plugin with fastlane
       - name: Install Firebase app distribution plugin
