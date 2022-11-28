@@ -38,7 +38,7 @@ jobs:
         - name: Setup Ruby
           uses: actions/setup-ruby@v1
           with:
-            ruby-version: '2.6'
+            ruby-version: '3.0'
 
         # Step 5 Install the bundler & Fastlane (Create environment for ruby to avoid dependency hell and manage the dependencies versions)
         - name: Install bundler
