@@ -44,7 +44,6 @@ jobs:
         - name: Install bundler
           run: |
             gem install bundler:2.2.27
-            bundle install --jobs 4 --retry 3
         # Step 6 Install the Firebase app distribution plugin with fastlane
         - name: Install Firebase app distribution plugin
           run: bundle exec fastlane add_plugin firebase_app_distribution
