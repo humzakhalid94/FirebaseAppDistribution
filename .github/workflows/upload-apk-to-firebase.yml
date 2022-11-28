@@ -68,14 +68,14 @@ jobs:
           run: bundle exec fastlane uploadApkToFirebase
 
         # Step 11 Run the fastlane command to notify job status success
-        - name: Slack notification for success
-          if: ${{job.status == 'success'}}
-          run: bundle exec fastlane sendBuildUploadingSuccessMessage
+        #- name: Slack notification for success
+        #  if: ${{job.status == 'success'}}
+        #  run: bundle exec fastlane sendBuildUploadingSuccessMessage
 
         # Step 12 Run the fastlane command to notify job status failed
-        - name: Slack notification for failed
-          if: ${{job.status == 'failure'}}
-          run: bundle exec fastlane sendBuildUploadingFailMessage
+        #- name: Slack notification for failed
+        #  if: ${{job.status == 'failure'}}
+        #  run: bundle exec fastlane sendBuildUploadingFailMessage
 
 
 
