@@ -22,7 +22,7 @@ jobs:
       ANDROID_STORE_PASSWORD: ${{secrets.ANDROID_STORE_PASSWORD}}
       ANDROID_SIGNING_KEY: ${{secrets.ANDROID_SIGNING_KEY}}
       PRIVATE_SERVICE_ACCOUNT_KEY: ${{secrets.PRIVATE_SERVICE_ACCOUNT_KEY}}
-
+#
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
