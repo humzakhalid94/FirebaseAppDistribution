@@ -78,7 +78,7 @@ ANDROID_STORE_PASSWORD = ENV["ANDROID_STORE_PASSWORD"]
             firebase_app_distribution(
                     app: FIREBASE_APP_ID,
                     firebase_cli_token: FIREBASE_CLI_TOKEN,
-                    release_notes: "My Release Notes Are Here",
+                    release_notes: "release-notes.txt",
                     android_artifact_type: "APK",
                     android_artifact_path: "app/build/outputs/apk/release/app-release.apk",
                     groups: "beta-testers"
