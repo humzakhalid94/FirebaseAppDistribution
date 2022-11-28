@@ -1,161 +1,38 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
 default_platform(:android)
 
 platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
 
-FIREBASE_CLI_TOKEN = ENV["FIREBASE_CLI_TOKEN"]
-FIREBASE_APP_ID = ENV["FIREBASE_APP_ID"]
-# SLACK_WEB_HOOK_URL = ENV["SLACK_WEB_HOOK_URL"]
-ANDROID_KEY_ALIAS = ENV["ANDROID_KEY_ALIAS"]
-ANDROID_KEY_PASSWORD = ENV["ANDROID_KEY_PASSWORD"]
-ANDROID_STORE_PASSWORD = ENV["ANDROID_STORE_PASSWORD"]
-# ANDROID_SIGNING_KEY = ENV["ANDROID_SIGNING_KEY"]
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    gradle(task: "clean assembleRelease")
+    crashlytics
+  
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
 
-   #Simple Lane Format
-      desc "Provide description for your lane"
-      lane :laneName do
-            #your operation
-            end
-
-   # Lane to Deploy Production-Release Bundle file in Internal track
-      desc "Deploy Production-Release APK file in Internal track to PlayStore" # Lane description
-      lane :prodApkBeta do
-         gradle(
-                  task: "assemble", # assemble for release apk, assemble
-                  flavor: "prod", # Flavor Name
-                  build_type: "Release",
-                  properties: {
-                      "android.injected.signing.store.file" => "Your Keystore Path",
-                      "android.injected.signing.store.password" => "Your Keystore Password",
-                      "android.injected.signing.key.alias" => "Your Key Alias",
-                      "android.injected.signing.key.password" => "Your Key Password",
-                  }
-        )
-        supply(
-            skip_upload_images: 'true',
-            skip_upload_screenshots: 'true',
-            track: 'internal', # track name in which you want to deploy your build
-            package_name: 'Package name of your app',
-            apk_paths: ["Your generated apk file path"]
-        )
-        end
-
-  # Lane to Deploy Production-Release Bundle file in Beta track
-    desc "Deploy Production-Release Bundle file in Internal track to PlayStore"
-    lane :prodBundleBeta do
-       gradle(
-                task: "bundle",
-                flavor: "prod", # Flavor Name
-                build_type: "Release",
-                properties: {
-                    "android.injected.signing.store.file" => "Your Keystore Path",
-                    "android.injected.signing.store.password" => "Your Keystore Password",
-                    "android.injected.signing.key.alias" => "Your Key Alias",
-                    "android.injected.signing.key.password" => "Your Key Password",
-                }
-      )
-      supply(
-          skip_upload_images: 'true',
-          skip_upload_screenshots: 'true',
-          track: 'internal',
-          package_name: 'Package name of your app',
-          aab_paths: ["Your generated aab file path"]
-      )
-      end
-
-     # Lane to Upload Apk to Firebase
-         desc "Upload release apk on firebase app distribution"
-         lane :uploadApkToFirebase do
-            gradle(
-                    task: "assemble",
-                    build_type: "Release",
-                    properties: {
-                        "android.injected.signing.store.file" => "/home/runner/work/FastlaneSampleProject/FastlaneSampleProject/fastlanesample.jks",
-                        "android.injected.signing.store.password" => ANDROID_STORE_PASSWORD,
-                        "android.injected.signing.key.alias" => ANDROID_KEY_ALIAS,
-                        "android.injected.signing.key.password" => ANDROID_KEY_PASSWORD,
-                    }
-            )
-            firebase_app_distribution(
-                    app: FIREBASE_APP_ID,
-                    firebase_cli_token: FIREBASE_CLI_TOKEN,
-                    release_notes_file: "release-notes.txt",
-                    android_artifact_type: "APK",
-                    android_artifact_path: "app/build/outputs/apk/release/app-release.apk",
-                    groups: "beta-testers"
-            )
-         end
-
-     # Lane to Upload Bundle to Firebase
-              desc "Upload release bundle on firebase app distribution"
-              lane :uploadBundleToFirebase do
-                 gradle(
-                         task: "Bundle",
-                         build_type: "Release",
-                         properties: {
-                             "android.injected.signing.store.file" => "Your Keystore Path",
-                             "android.injected.signing.store.password" => "Your Keystore Password",
-                             "android.injected.signing.key.alias" => "Your Key Alias",
-                             "android.injected.signing.key.password" => "Your Key Password",
-                         }
-                 )
-                 firebase_app_distribution(
-                         app: "Your Firebase App Id",
-                         firebase_cli_token: "Your Firebase CLI token",
-                         release_notes_file: "release-notes.txt",
-                         android_artifact_type: "AAB",
-                         android_artifact_path: "app/build/outputs/bundle/release/app-release.apk",
-                         groups: "Your Testers Group Name"
-                 )
-              end
-
-    # Fetch latest build version from Firebase App Distribution and increment version by 1
-        desc "Get latest build version from Firebase App Distribution"
-        lane :getLatestVersionAndUpgrade do
-            latest_release = firebase_app_distribution_get_latest_release(
-                app: FIREBASE_APP_ID,
-                service_credentials_file: "/home/runner/work/FastlaneSampleProject/FastlaneSampleProject/private-decoded-key.json"
-            )
-            versionName = latest_release[:displayVersion]
-            versionNumber = latest_release[:buildVersion]
-            final_version_number = versionNumber.to_i + 1
-            versionNameArray = versionName.split(".")
-            major = versionNameArray[0]
-            minor = versionNameArray[1]
-            point = versionNameArray[2]
-            final_version_name_point = point.to_i + 1
-            final_version_name = major.to_s + "." + minor.to_s + "." + final_version_name_point.to_s
-            path = "../app/build.gradle"
-            versionCode = /versionCode\s+(\d+)/
-            versionName = /versionName\s+(\S+)/
-            s = File.read(path)
-            s[versionCode,1] = final_version_number.to_s
-            s[versionName,1] = "\"#{final_version_name}\""
-            f= File.new(path,'w')
-            f.write(s)
-            f.close
-        end
-
-    # Build uploading success message
-        desc "Build upload success"
-        lane :sendBuildUploadingSuccessMessage do
-        slack(
-              username: "Android Apk",
-              message: "Android Apk is uploaded successfully to firebase",
-              success: true,
-              slack_url: SLACK_WEB_HOOK_URL,
-              icon_url: "https://github.com/milanvadhel-mi/FastlaneSampleProject/blob/main/app/src/main/res/mipmap-hdpi/ic_launcher.webp"
-        )
-        end
-
-    # Build uploading fail message
-        desc "Build upload failed"
-        lane :sendBuildUploadingFailMessage do
-        slack(
-              username: "Android Apk",
-              message: "Android Apk is uploading failed to firebase",
-              success: false,
-              slack_url: SLACK_WEB_HOOK_URL,
-              icon_url: "https://github.com/milanvadhel-mi/FastlaneSampleProject/blob/main/app/src/main/res/mipmap-hdpi/ic_launcher.webp"
-        )
-        end
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
 end
