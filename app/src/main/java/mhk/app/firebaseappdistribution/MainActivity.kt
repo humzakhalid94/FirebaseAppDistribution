@@ -8,6 +8,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         //For Build Artifact ABB -> App Store linking is mandatory on firebase
         //For Build Artifact APK -> App Store linking is not mandatory
 
