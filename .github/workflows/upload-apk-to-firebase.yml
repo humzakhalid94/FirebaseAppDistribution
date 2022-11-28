@@ -56,8 +56,8 @@ jobs:
           run: echo ${{secrets.PRIVATE_SERVICE_ACCOUNT_KEY}} | base64 -d > /home/runner/work/FirebaseAppDistribution/FirebaseAppDistribution/private-decoded-key.json
 
         # Step 8 Run the fastlane command to update versionCode and versionName based on latest build uploaded on firebase
-        - name: Upgrade build version
-          run: bundle exec fastlane getLatestVersionAndUpgrade
+        #- name: Upgrade build version
+        #  run: bundle exec fastlane getLatestVersionAndUpgrade
 
         # Step 9 Run the Base64 command to decode and create the .jks file from base64 string of .jks
         - name: Generate .jks file
